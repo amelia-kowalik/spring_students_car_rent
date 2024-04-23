@@ -10,11 +10,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RentService {
-    //todo: Dodac wstrzykwianie autowired przez konstruktor.
 
     private IUserRepository userRepository;
 
     private IVehicleRepository vehicleRepository;
+
+    @Autowired
+    public RentService(IUserRepository userRepository, IVehicleRepository vehicleRepository) {
+        this.userRepository = userRepository;
+        this.vehicleRepository = vehicleRepository;
+    }
+
 
     public boolean rentVehicle(String plate, String login) {
         User user = userRepository.getUser(login);
@@ -26,5 +32,8 @@ public class RentService {
         }
         return false;
     }
-    //todo: dodac zwracanie pojazdu
+
+    public Vehicle getVehicle(String plate){
+        return vehicleRepository.getVehicle(plate);
+    }
 }

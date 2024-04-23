@@ -12,10 +12,12 @@ import org.example.model.Vehicle;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+public class VehicleDto {
+    private String vehicleType;
+    private Vehicle vehicle;
+    private String category;
 
-public class UserDto {
-    private String login;
-    private User.Role role;
-    @JsonIgnore
-    private Vehicle rentedVehicle;
+
+
+
 }

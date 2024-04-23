@@ -1,22 +1,22 @@
 package org.example.controller;
 
+import org.example.dao.hibernate.VehicleDAO;
 import org.example.dto.RentCarDto;
+import org.example.model.Vehicle;
 import org.example.service.RentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/rents")
 public class RentController {
-    //todo: dodac zwracanie pojazdu
-    //todo: zamienic wstrzykiwanie na wstrzykiwanie przez konstruktor
+    private final RentService rentService;
+    private final VehicleDAO vehicleDAO;
 
-    @Autowired
-    private RentService rentService;
+    public RentController(RentService rentService, VehicleDAO vehicleDAO) {
+        this.rentService = rentService;
+        this.vehicleDAO = vehicleDAO;
+    }
 
     @PostMapping("/rent")
     public ResponseEntity<String> rentVehicle(@RequestBody RentCarDto request) {
@@ -25,6 +25,16 @@ public class RentController {
             return ResponseEntity.ok("Vehicle rented");
         } else {
             return ResponseEntity.badRequest().body("Failed");
+        }
+    }
+
+    @GetMapping ("/vehicle/{plate}")
+    public ResponseEntity<Vehicle> getVehicle(@PathVariable String plate){
+        Vehicle vehicle = rentService.getVehicle(plate);
+        if(vehicle != null){
+            return ResponseEntity.ok(vehicle);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }

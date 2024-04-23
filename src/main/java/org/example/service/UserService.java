@@ -12,14 +12,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 @Service
 public class UserService {
-    //todo: Dodac wstrzykwianie autowired przez konstruktor.
     private IUserRepository userRepository;
+
+    @Autowired
+    public UserService(IUserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+
+
 
     public Collection<UserDto> getUsers() {
         Collection<UserDto> userDtos = new ArrayList<>();
         Collection<User> users = userRepository.getUsers();
         for (User user : users) {
-            UserDto userDto = new UserDto(user.getLogin(), user.getRole());
+            UserDto userDto = new UserDto(user.getLogin(), user.getRole(),user.getVehicle());
             userDtos.add(userDto);
         }
         return userDtos;
@@ -29,20 +36,26 @@ public class UserService {
         System.out.println("login");
         User user = userRepository.getUser(login);
         if (user != null)
-            return new UserDto(user.getLogin(),user.getRole());
+            return new UserDto(user.getLogin(),user.getRole(),user.getVehicle());
         else
             return null;
     }
 
-    public void createUser(CreateUserDto createUserDto) {
+    public boolean createUser(CreateUserDto createUserDto) {
         User newUser = new User();
         newUser.setLogin(createUserDto.getLogin());
         newUser.setPassword(Authenticator.hashPassword(createUserDto.getPassword()));
         newUser.setRole(User.Role.USER);
-        userRepository.addUser(newUser);
-        //todo: logika gdy nie uda się dodać usera podobnie jak w deleteUser - zmiana void na typ String
-        // albo boolean.
+
+        try {
+            userRepository.addUser(newUser);
+            return true;
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
+
     public String deleteUser(String login) {
         User user = userRepository.getUser(login);
         if (user == null)
